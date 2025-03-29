@@ -9,47 +9,47 @@ export class UsersRepository {
 
   async findByUUID(
     uuid: UUID,
-    includeDeleted: boolean = false,
+    options: { includeDeleted?: boolean } = {},
   ): Promise<Nullable<User>> {
     return this.prismaService.user.findUnique({
       where: {
         uuid,
       },
       // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted,
+      includeDeleted: options.includeDeleted,
     });
   }
 
   async findByUsername(
     username: string,
-    includeDeleted: boolean = false,
+    options: { includeDeleted?: boolean } = {},
   ): Promise<Nullable<User>> {
     return this.prismaService.user.findUnique({
       where: {
         username,
       },
       // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted,
+      includeDeleted: options.includeDeleted,
     });
   }
 
   async findByEmail(
     email: Email,
-    includeDeleted: boolean = false,
+    options: { includeDeleted?: boolean } = {},
   ): Promise<Nullable<User>> {
     return this.prismaService.user.findUnique({
       where: {
         email,
       },
       // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted,
+      includeDeleted: options.includeDeleted,
     });
   }
 
-  async findAll(includeDeleted: boolean = false): Promise<User[]> {
+  async findAll(options: { includeDeleted?: boolean } = {}): Promise<User[]> {
     return this.prismaService.user.findMany({
       // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted,
+      includeDeleted: options.includeDeleted,
     });
   }
 
@@ -61,21 +61,16 @@ export class UsersRepository {
     });
   }
 
-  async delete(uuid: UUID, softDelete: boolean = true): Promise<void> {
-    if (softDelete)
-      await this.prismaService.user.update({
-        where: {
-          uuid,
-        },
-        data: {
-          deletedAt: new Date(),
-        },
-      });
-    else
-      await this.prismaService.user.delete({
-        where: {
-          uuid,
-        },
-      });
+  async delete(
+    uuid: UUID,
+    options: { hardDelete?: boolean } = {},
+  ): Promise<void> {
+    await this.prismaService.user.delete({
+      where: {
+        uuid,
+      },
+      // @ts-expect-error hardDelete is a custom argument
+      hardDelete: options.hardDelete,
+    });
   }
 }
