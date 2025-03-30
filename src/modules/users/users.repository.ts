@@ -1,5 +1,5 @@
-import { PrismaService } from '@/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@prisma/prisma.service';
 import { User } from '@share-ur-save/common';
 import { UUID } from 'node:crypto';
 

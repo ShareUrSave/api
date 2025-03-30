@@ -1,19 +1,34 @@
-import { UsersRepository } from '@/modules/users/users.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User as BaseUser } from '@share-ur-save/common';
-import * as bcrypt from 'bcrypt';
+import { BaseUser, User } from '@users/types';
+import { UsersRepository } from '@users/users.repository';
+import bcrypt from 'bcrypt';
 import { UUID } from 'node:crypto';
 
 const SALT_ROUNDS = 10;
-
-type User = Omit<BaseUser, 'password'>;
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
+  async validateUser(login: string, password: string): Promise<Nullable<User>> {
+    const user = (
+      await Promise.all([
+        this.usersRepository.findByUsername(login),
+        this.usersRepository.findByEmail(login as Email),
+      ])
+    ).filter(Boolean)[0];
+
+    if (!user || !user.password || !bcrypt.compareSync(password, user.password))
+      return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userData } = user;
+
+    return userData;
+  }
+
   async getUser(identifier: string): Promise<User> {
-    const users = (
+    const user = (
       await Promise.all([
         this.usersRepository.findByUUID(identifier as UUID, {
           includeDeleted: false,
@@ -25,11 +40,14 @@ export class UsersService {
           includeDeleted: false,
         }),
       ])
-    ).filter(Boolean);
+    ).filter(Boolean)[0];
 
-    if (!users[0]) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('User not found');
 
-    return users[0];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userData } = user;
+
+    return userData;
   }
 
   async getUserByUUID(uuid: UUID): Promise<User> {

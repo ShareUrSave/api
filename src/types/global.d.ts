@@ -1,3 +1,13 @@
-declare type Nullable<T> = T | null;
+import { User } from '@users/types';
 
-declare type Email = `${string}@${string}.${string}`;
+declare global {
+  declare type Nullable<T> = T | null;
+
+  declare type Email = `${string}@${string}.${string}`;
+}
+
+declare module 'express' {
+  interface Request {
+    user: Nullable<User>;
+  }
+}
