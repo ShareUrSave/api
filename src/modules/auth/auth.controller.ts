@@ -1,5 +1,9 @@
+import { SignInDto, SignUpDto } from '@auth/auth.dtos';
 import {
+  Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -7,6 +11,7 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,28 +21,67 @@ import { Request, Response } from 'express';
 export class AuthController {
   constructor() {}
 
+  @Get('me')
+  getMe(@Req() req: Request, @Res() res: Response) {
+    const user = req.user;
+
+    if (!user) throw new UnauthorizedException('You are not authenticated');
+
+    return res.send(user);
+  }
+
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('local'))
-  signIn(@Req() req: Request, @Res() res: Response) {
-    return req.login(req.user!, (error) => {
+  signIn(@Body() body: SignInDto, @Req() req: Request, @Res() res: Response) {
+    req.login(req.user!, (error) => {
       if (error) {
-        throw new InternalServerErrorException();
+        throw new InternalServerErrorException('Failed to sign in');
       }
+
+      if (body.rememberMe) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30;
 
       return res.send(req.user);
     });
   }
 
-  @Post('sign-up')
-  @HttpCode(HttpStatus.CREATED)
-  signUp() {
-    throw new NotImplementedException();
+  @Post('sign-in/google')
+  signInWithGoogle() {
+    throw new NotImplementedException('Google OAuth2 is not implemented yet');
   }
 
-  @Post('sign-out')
+  @Post('sign-in/steam')
+  signInWithSteam() {
+    throw new NotImplementedException('Steam OpenID is not implemented yet');
+  }
+
+  @Post('sign-in/discord')
+  signInWithDiscord() {
+    throw new NotImplementedException('Discord OAuth2 is not implemented yet');
+  }
+
+  @Post('sign-up')
+  @HttpCode(HttpStatus.CREATED)
+  signUp(@Body() body: SignUpDto) {
+    throw new NotImplementedException('Sign up is not implemented yet');
+  }
+
+  @Delete('sign-out')
   @HttpCode(HttpStatus.NO_CONTENT)
-  signOut() {
-    throw new NotImplementedException();
+  signOut(@Req() req: Request, @Res() res: Response) {
+    req.logout((error) => {
+      if (error) {
+        throw new InternalServerErrorException('Failed to sign out');
+      }
+
+      req.session.destroy((error) => {
+        if (error) {
+          throw new InternalServerErrorException('Failed to destroy session');
+        }
+
+        res.clearCookie('connect.sid');
+        return res.send();
+      });
+    });
   }
 }

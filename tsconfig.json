@@ -12,9 +12,12 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
+      "@auth/*": ["./src/modules/auth/*"],
       "@config/*": ["./src/config/*"],
+      "@games/*": ["./src/modules/games/*"],
       "@prisma/*": ["./src/modules/prisma/*"],
       "@users/*": ["./src/modules/users/*"],
+      "@saves/*": ["./src/modules/saves/*"],
       "@modules/*": ["./src/modules/*"],
       "@app-types/*": ["./src/types/*"],
       "@/*": ["./src/*"]

@@ -11,7 +11,7 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: User, done: (err: any, uuid?: UUID) => void): void {
-    done(null, user.uuid as UUID);
+    done(null, user.uuid);
   }
 
   async deserializeUser(

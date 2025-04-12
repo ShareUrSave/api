@@ -24,7 +24,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async getUser(identifier: string): Promise<User> {
@@ -47,7 +47,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async getUserByUUID(uuid: UUID): Promise<User> {
@@ -58,7 +58,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async getUserByUsername(username: string): Promise<User> {
@@ -69,7 +69,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async getUserByEmail(email: Email): Promise<User> {
@@ -80,13 +80,13 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async getUsers(): Promise<User[]> {
     return (await this.usersRepository.findAll()).map(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ password: _, ...user }) => user,
+      ({ password: _, ...user }) => user as User,
     );
   }
 
@@ -105,7 +105,7 @@ export class UsersService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userData } = user;
 
-    return userData;
+    return userData as User;
   }
 
   async deleteUser(uuid: UUID): Promise<void> {
