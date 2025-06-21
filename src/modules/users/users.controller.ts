@@ -1,9 +1,28 @@
-import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '@users/users.service';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  getMe(@Req() req: Request) {
+    const user = req.user ? this.usersService.getUser(req.user.uuid) : null;
+
+    if (!user) throw new UnauthorizedException('You are not authenticated');
+
+    return user;
+  }
 
   @Get(':identifier')
   @HttpCode(HttpStatus.OK)

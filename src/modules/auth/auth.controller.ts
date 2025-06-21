@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -11,7 +10,6 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,15 +18,6 @@ import { Request, Response } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor() {}
-
-  @Get('me')
-  getMe(@Req() req: Request, @Res() res: Response) {
-    const user = req.user;
-
-    if (!user) throw new UnauthorizedException('You are not authenticated');
-
-    return res.send(user);
-  }
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
