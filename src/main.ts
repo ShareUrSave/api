@@ -1,6 +1,6 @@
 import { setupSwagger } from '@/swagger';
 import { AppModule } from '@modules/app.module';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@modules/config/config.service';
 import { NestFactory } from '@nestjs/core';
 import { RedisStore } from 'connect-redis';
 import session from 'express-session';
@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const redisClient = new Redis(configService.get<string>('REDIS_URL')!);
+  const redisClient = new Redis(configService.get('REDIS_URL')!);
 
   app.enableCors({
     origin: 'http://localhost:8080',
