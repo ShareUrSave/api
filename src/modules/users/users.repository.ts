@@ -1,55 +1,63 @@
+import { FindOptions, IRepository } from '@api-types/repository';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { User } from '@share-ur-save/common';
-import { UUID } from 'node:crypto';
 
 @Injectable()
-export class UsersRepository {
+export class UsersRepository implements IRepository<User> {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findByUUID(
-    uuid: UUID,
-    options: { includeDeleted?: boolean } = {},
+    uuid: string,
+    options: FindOptions<false> = {},
   ): Promise<Nullable<User>> {
+    const { includeDeleted = false } = options;
+
     return this.prismaService.user.findUnique({
       where: {
         uuid,
+        ...(includeDeleted ? {} : { deletedAt: null }),
       },
-      // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted: options.includeDeleted,
     });
   }
 
   async findByUsername(
     username: string,
-    options: { includeDeleted?: boolean } = {},
+    options: FindOptions<false> = {},
   ): Promise<Nullable<User>> {
+    const { includeDeleted = false } = options;
+
     return this.prismaService.user.findUnique({
       where: {
         username,
+        ...(includeDeleted ? {} : { deletedAt: null }),
       },
-      // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted: options.includeDeleted,
     });
   }
 
   async findByEmail(
-    email: Email,
-    options: { includeDeleted?: boolean } = {},
+    email: string,
+    options: FindOptions<false> = {},
   ): Promise<Nullable<User>> {
+    const { includeDeleted = false } = options;
+
     return this.prismaService.user.findUnique({
       where: {
         email,
+        ...(includeDeleted ? {} : { deletedAt: null }),
       },
-      // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted: options.includeDeleted,
     });
   }
 
-  async findAll(options: { includeDeleted?: boolean } = {}): Promise<User[]> {
+  async findAll(options: FindOptions<true> = {}): Promise<User[]> {
+    const { includeDeleted = false, offset, limit } = options;
+
     return this.prismaService.user.findMany({
-      // @ts-expect-error includeDeleted is a custom argument
-      includeDeleted: options.includeDeleted,
+      where: {
+        ...(includeDeleted ? {} : { deletedAt: null }),
+      },
+      skip: offset,
+      take: limit,
     });
   }
 
@@ -62,15 +70,38 @@ export class UsersRepository {
   }
 
   async delete(
-    uuid: UUID,
+    uuid: string,
     options: { hardDelete?: boolean } = {},
   ): Promise<void> {
+    const { hardDelete = false } = options;
+
+    if (hardDelete) await this.hardDelete(uuid);
+    else
+      await this.prismaService.user.update({
+        where: {
+          uuid,
+        },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+  }
+
+  private async hardDelete(uuid: string): Promise<void> {
     await this.prismaService.user.delete({
       where: {
         uuid,
       },
-      // @ts-expect-error hardDelete is a custom argument
-      hardDelete: options.hardDelete,
+    });
+  }
+
+  async count(options: FindOptions<false> = {}): Promise<number> {
+    const { includeDeleted = false } = options;
+
+    return this.prismaService.user.count({
+      where: {
+        ...(includeDeleted ? {} : { deletedAt: null }),
+      },
     });
   }
 }

@@ -1,5 +1,5 @@
+import configSchema from '@modules/config/config.schema';
 import { ConfigService } from '@modules/config/config.service';
-import configSchema from '@modules/config/schema';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
@@ -11,9 +11,8 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
       envFilePath: ['.env', '.env.production', '.env.development'],
       validate: (config) => {
         const result = configSchema.safeParse(config);
-        if (!result.success) {
-          throw new Error('Invalid configuration');
-        }
+        if (!result.success)
+          throw new Error('Invalid configuration: ' + result.error.message);
         return result.data;
       },
     }),

@@ -1,11 +1,11 @@
-import { SignInDto, SignUpDto } from '@auth/auth.dtos';
+import { SignInBodyDto, SignUpBodyDto } from '@auth/auth.dtos';
+import { AuthService } from '@auth/auth.service';
 import {
   Body,
   Controller,
   Delete,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   NotImplementedException,
   Post,
   Req,
@@ -17,60 +17,53 @@ import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor() {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('local'))
-  signIn(@Body() body: SignInDto, @Req() req: Request, @Res() res: Response) {
-    req.login(req.user!, (error) => {
-      if (error) {
-        throw new InternalServerErrorException('Failed to sign in');
-      }
-
-      if (body.rememberMe) req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30;
-
-      return res.send(req.user);
-    });
+  signIn(
+    @Body() body: SignInBodyDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.authService.signIn(req, res, body.rememberMe);
   }
 
   @Post('sign-in/google')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   signInWithGoogle() {
     throw new NotImplementedException('Google OAuth2 is not implemented yet');
   }
 
   @Post('sign-in/steam')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   signInWithSteam() {
     throw new NotImplementedException('Steam OpenID is not implemented yet');
   }
 
   @Post('sign-in/discord')
+  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   signInWithDiscord() {
     throw new NotImplementedException('Discord OAuth2 is not implemented yet');
   }
 
   @Post('sign-up')
   @HttpCode(HttpStatus.CREATED)
-  signUp(@Body() body: SignUpDto) {
-    throw new NotImplementedException('Sign up is not implemented yet');
+  signUp(
+    @Body() body: SignUpBodyDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.authService.signUp(body, req, res);
   }
 
   @Delete('sign-out')
   @HttpCode(HttpStatus.NO_CONTENT)
   signOut(@Req() req: Request, @Res() res: Response) {
-    req.logout((error) => {
-      if (error) {
-        throw new InternalServerErrorException('Failed to sign out');
-      }
-
-      req.session.destroy((error) => {
-        if (error) {
-          throw new InternalServerErrorException('Failed to destroy session');
-        }
-
-        res.clearCookie('connect.sid');
-        return res.send();
-      });
-    });
+    return this.authService.signOut(req, res);
   }
 }

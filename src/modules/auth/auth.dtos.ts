@@ -11,7 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class SignInDto {
+export class SignInBodyDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ name: 'login', type: String, required: true })
@@ -28,7 +28,7 @@ export class SignInDto {
   rememberMe?: boolean;
 }
 
-export class SignUpDto {
+export class SignUpBodyDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(3, { message: 'username should be at least 3 characters' })

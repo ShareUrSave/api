@@ -1,4 +1,4 @@
-import configSchema from '@modules/config/schema';
+import configSchema from '@modules/config/config.schema';
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
 import { z } from 'zod';

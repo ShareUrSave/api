@@ -11,16 +11,18 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "resolveJsonModule": true,
     "paths": {
+      "@interceptors/*": ["./src/interceptors/*"],
       "@auth/*": ["./src/modules/auth/*"],
       "@config/*": ["./src/config/*"],
-      "@games/*": ["./src/modules/games/*"],
       "@prisma/*": ["./src/modules/prisma/*"],
       "@users/*": ["./src/modules/users/*"],
-      "@saves/*": ["./src/modules/saves/*"],
       "@modules/*": ["./src/modules/*"],
-      "@app-types/*": ["./src/types/*"],
-      "@/*": ["./src/*"]
+      "@pipes/*": ["./src/pipes/*"],
+      "@api-types/*": ["./src/types/*"],
+      "@/*": ["./src/*"],
+      "package.json": ["./package.json"]
     },
     "incremental": true,
     "skipLibCheck": true,
