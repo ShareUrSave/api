@@ -21,11 +21,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const redisClient = new Redis(configService.get('REDIS_URL')!);
 
-  app.enableCors({
-    origin: 'http://localhost:8080',
-    credentials: true,
-  });
-
   app.use(
     session({
       name: AUTH_COOKIE_NAME,

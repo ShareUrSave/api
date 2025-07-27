@@ -30,6 +30,11 @@ export class AuthService {
     });
   }
 
+  steamSignIn(req: Request, res: Response, rememberMe?: boolean) {
+    this.signIn(req, res, rememberMe);
+    return res.redirect('http://localhost:8080');
+  }
+
   async signUp(data: SignUpBodyDto, req: Request, res: Response) {
     const user = await this.usersService.createUser({
       username: data.username,

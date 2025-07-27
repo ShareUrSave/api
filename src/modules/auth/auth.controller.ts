@@ -4,6 +4,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   NotImplementedException,
@@ -37,11 +38,14 @@ export class AuthController {
     throw new NotImplementedException('Google OAuth2 is not implemented yet');
   }
 
-  @Post('sign-in/steam')
-  @HttpCode(HttpStatus.OK)
-  @HttpCode(HttpStatus.CREATED)
-  signInWithSteam() {
-    throw new NotImplementedException('Steam OpenID is not implemented yet');
+  @Get('sign-in/steam')
+  @UseGuards(AuthGuard('steam'))
+  steamAuth() {}
+
+  @Get('sign-in/steam/callback')
+  @UseGuards(AuthGuard('steam'))
+  steamAuthCallback(@Req() req: Request, @Res() res: Response) {
+    return this.authService.steamSignIn(req, res, false);
   }
 
   @Post('sign-in/discord')
